@@ -1,0 +1,30 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "verbalizer-vs-cot"
+version = "0.0.1"
+description = "When does verbalizing a model's activations beat reading its chain-of-thought? SIEVE-audited demonstration."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Ratnaditya Jonnalagadda", email = "ratnaditya@gmail.com" }]
+dependencies = [
+  "numpy>=1.24",
+  # the validity engine + verbalizer adapter (Phase 1 of this project).
+  # Until the verbalizer-faithfulness branch is on PyPI/GitHub, install from
+  # the local checkout: pip install -e "../sieve-audit[dev]"
+  "sieve-audit>=0.1",
+]
+
+[project.optional-dependencies]
+runner = ["sieve-audit[runner,judges]"]
+dev = ["pytest>=7"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/verbalizer_vs_cot"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

@@ -1,0 +1,11 @@
+__pycache__/
+*.egg-info/
+.venv/
+# data policy: generated evidence stays local — activations, generations,
+# judged outputs, and per-run artifacts are never committed
+runs/
+*.npz
+generations*.jsonl
+claims*.jsonl
+judged*.jsonl
+steer*.jsonl

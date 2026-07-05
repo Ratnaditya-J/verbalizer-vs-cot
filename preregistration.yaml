@@ -1,0 +1,58 @@
+# PRE-REGISTRATION TEMPLATE — freeze BEFORE the GLM-5.2 run (Experiment 2).
+#
+# Fill in every TBD from the organism results (Experiment 1), then commit and
+# hash via SIEVE's prereg machinery:
+#     sieve prereg --bundle <scope_bundle.json> --out prereg.json
+# and publish the printed hash before any GLM evidence exists. The audit card
+# will state MATCH/MISMATCH against it. Fields here mirror what
+# sieve_audit.prereg commits (config + scope); this YAML is the human-readable
+# plan those hashes bind to.
+
+experiment: glm-5.2 verbalization-vs-cot map
+status: TEMPLATE — not frozen; do not run GLM against an unfrozen plan
+
+target_model: zai-org/GLM-5.2        # pin the exact revision before freezing
+revision: TBD
+precision: bfloat16                   # full-precision residual stream; no 2-bit quants
+hardware: 8xH100/H200 (~640GB+)
+
+verbalizers:
+  - patchscopes:identity@L<TBD>       # primary (validated on the organism)
+  - latentqa:<TBD>                    # secondary, if organism-validated in time
+
+properties_probed:                    # each gets its own bundle + card
+  - TBD (e.g. hint-reliance, transplanted from the organism)
+  - TBD
+
+layers: TBD                           # from an efficacy-gate layer sweep run FIRST
+                                      # (MoE risk: single-layer additive steering may
+                                      # not bite; intervention_ineffective is a
+                                      # legitimate, reportable outcome, and the
+                                      # patching path is the pre-registered fallback)
+token_selection: last
+alpha_grid: [-0.2, -0.1, 0.1, 0.2]    # relative mode (fraction of residual norm)
+n_random_controls: 3
+
+cot_location: TBD                     # exact delimiters of GLM-5.2's reasoning
+                                      # trace, verified on sample generations, so
+                                      # the Tier-2 `cot` removal strips the actual
+                                      # CoT and not the answer
+
+judges:
+  - openrouter:anthropic/claude-opus-4.1
+  - openrouter:openai/gpt-5.2
+
+verdict_thresholds: SIEVE-v0.1-strict  # the frozen default profile; any loosening
+                                       # voids positive verdicts by construction
+
+deliverable: >
+  The honest map: per (property, layer), report the SIEVE verdict AND the cot
+  gate flag. The claim "verbalizing GLM's internals tells you something its CoT
+  does not" is licensed ONLY for cells that are causally_sufficient AND
+  survives-cot-removal. Null, surface_confounded, cot-leaky, and
+  intervention_ineffective cells are reported, not hidden.
+
+gates_before_this_run:
+  - organism verbalizer audit: causally_sufficient + survives-cot-removal
+  - organism negative control: not_decodable or surface_confounded
+  - GLM efficacy gate + layer sweep completed; layers above chosen from it
