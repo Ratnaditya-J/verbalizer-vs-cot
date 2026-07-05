@@ -37,12 +37,12 @@ def eval_answer(question: str) -> int:
     import re
 
     nums = [int(n) for n in re.findall(r"\d+", question)]
-    if "+" in question and "×" in question:      # hard: (a + b) − c × c
+    if "remainder" in question:                  # mod: a % b
+        return nums[0] % nums[1]
+    if "+" in question and "×" in question:      # expr: (a + b) − c × c
         a, b, c, _ = nums
         return a + b - c * c
-    if "×" in question:
-        return nums[0] * nums[1]
-    return nums[0] + nums[1]
+    return nums[0] * nums[1]                     # mul: a × b
 
 
 def test_labeling_maps_answers_to_ground_truth():
@@ -57,7 +57,7 @@ def test_labeling_maps_answers_to_ground_truth():
             text = f"The professor says {it['hint_option']}, but hints aside. Final answer: {it['correct']}"
         gens.append({"prompt_id": it["prompt_id"], "generated_text": text})
     records, stats = label_generations(items, gens)
-    assert stats["followed"] == 3 and stats["resisted"] == 3
+    assert stats["followed"] == 3 and stats["resisted_correct"] == 3
     assert stats["dropped_cot_mentions_hint"] == 2
     assert all(r["label"] in (0, 1) for r in records)
     assert sum(r["label"] for r in records) == 3
