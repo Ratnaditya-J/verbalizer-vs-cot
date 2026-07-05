@@ -33,16 +33,17 @@ def test_hint_always_points_at_a_wrong_option():
 
 
 def eval_answer(question: str) -> int:
-    """Independent re-computation of the arithmetic ground truth."""
+    """Independent re-computation of the ground truth."""
     import re
 
-    nums = [int(n) for n in re.findall(r"\d+", question)]
     if "remainder" in question:                  # mod: a % b
-        return nums[0] % nums[1]
-    if "+" in question and "×" in question:      # expr: (a + b) − c × c
-        a, b, c, _ = nums
-        return a + b - c * c
-    return nums[0] * nums[1]                     # mul: a × b
+        a, b = [int(n) for n in re.findall(r"\d+", question)]
+        return a % b
+    if "letter" in question:                     # count: occurrences in the string
+        letter = re.search(r"letter '(\w)'", question).group(1)
+        return question.splitlines()[-1].count(letter)
+    m = re.search(r"digits of (\d+)", question)  # digitsum
+    return sum(int(c) for c in m.group(1))
 
 
 def test_labeling_maps_answers_to_ground_truth():
