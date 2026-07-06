@@ -1,4 +1,4 @@
-# PRE-REGISTRATION TEMPLATE — freeze BEFORE the GLM-5.2 run (Experiment 2).
+# PRE-REGISTRATION TEMPLATE - freeze BEFORE the GLM-5.2 run (Experiment 2).
 #
 # Fill in every TBD from the organism results (Experiment 1), then commit and
 # hash via SIEVE's prereg machinery:
@@ -9,7 +9,7 @@
 # plan those hashes bind to.
 
 experiment: glm-5.2 verbalization-vs-cot map
-status: TEMPLATE — not frozen; do not run GLM against an unfrozen plan
+status: TEMPLATE - not frozen; do not run GLM against an unfrozen plan
 
 target_model: zai-org/GLM-5.2        # pin the exact revision before freezing
 revision: TBD
@@ -39,8 +39,8 @@ cot_location: TBD                     # exact delimiters of GLM-5.2's reasoning
                                       # CoT and not the answer
 
 judges:
-  - openrouter:anthropic/claude-opus-4.1
-  - openrouter:openai/gpt-5.2
+  - openrouter:<judge-route-1, frozen at prereg time>
+  - openrouter:<judge-route-2, a second independent judge model>
 
 verdict_thresholds: SIEVE-v0.1-strict  # the frozen default profile; any loosening
                                        # voids positive verdicts by construction

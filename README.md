@@ -6,7 +6,7 @@ something you could NOT get by reading its chain-of-thought?**
 Activation verbalizers (Patchscopes, LatentQA, activation explainers) claim to
 translate a hidden state into a description of what the model is "thinking".
 The documented failure mode (arXiv 2509.13316) is confabulation: the verbalizer
-paraphrases the prompt or the CoT instead of reading the internals — worthless
+paraphrases the prompt or the CoT instead of reading the internals - worthless
 as a safety signal, since you already had both. This project answers the
 question with [SIEVE](https://github.com/Ratnaditya-J/sieve-audit)'s
 verbalizer-faithfulness audit (its Phase-1 machinery: claim scalarization →
@@ -14,15 +14,15 @@ surface baselines, the Tier-2 `cot` span gate, and matched-control steering on
 the claim-recovered direction), in two experiments where the first earns the
 right to make claims in the second.
 
-## Experiment 1 — organism validation (7B–32B, labeled, cheap)
+## Experiment 1 - organism validation (7B–32B, labeled, cheap)
 
 A **hint-unfaithfulness model organism**
 (`organisms/hint_unfaithfulness.py`): procedurally generated multiple-choice
 arithmetic with embedded hints pointing at wrong answers (Turpin et al.
-2305.04388). The subject model sometimes silently follows the hint — a *known,
+2305.04388). The subject model sometimes silently follows the hint - a *known,
 benign, induced* hidden property its polished CoT conceals (examples whose CoT
 mentions the hint are dropped at labeling). Crucially, labels are behavioral
-(**followed vs resisted, all on hinted prompts**), never hinted-vs-unhinted —
+(**followed vs resisted, all on hinted prompts**), never hinted-vs-unhinted -
 otherwise the hint text itself would be a perfect surface feature and the audit
 would be unwinnable by construction.
 
@@ -31,7 +31,7 @@ Success criteria (all three, before touching GLM):
 2. claims **survive CoT removal** (SIEVE's `cot` gate: the verbalization sees
    what the CoT hides);
 3. negative control (unhinted twins, no hidden property):
-   `not_decodable`/`surface_confounded` — the verbalizer must not hallucinate
+   `not_decodable`/`surface_confounded` - the verbalizer must not hallucinate
    hidden state.
 
 Run: `scripts/pod_run_organism.sh` (1×80GB GPU). Verbalizers: Patchscopes-style
@@ -39,7 +39,7 @@ identity readout first (already implemented in sieve-audit's adapter), then a
 LatentQA-style trained decoder. Organism ladder: hint-unfaithfulness → benign
 backdoor trigger → EM-style fine-tune with a bounded payload.
 
-## Experiment 2 — GLM-5.2 (label-free, the showcase)
+## Experiment 2 - GLM-5.2 (label-free, the showcase)
 
 Apply the *validated* method to GLM-5.2 (~40B-active/744B-total MoE, explicit
 reasoning traces). No ground-truth labels needed: SIEVE's causal verdict is
@@ -53,7 +53,7 @@ fails, the verdict is `intervention_ineffective` (inconclusive, not a null),
 the correlational result (decodability + CoT-removal) still stands, and
 activation patching is the pre-registered fallback.
 
-**Deliverable: the honest map** — per (property, layer), the SIEVE verdict and
+**Deliverable: the honest map** - per (property, layer), the SIEVE verdict and
 the `cot` flag, each cell carrying its config-hashed evidence card. The
 headline claim is licensed only for cells that are `causally_sufficient` AND
 `survives-cot-removal`; nulls and inconclusive cells are reported, not hidden.

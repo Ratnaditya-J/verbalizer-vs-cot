@@ -26,7 +26,7 @@ python scripts/records_to_prompts.py "$OUT/labeled.jsonl" "$OUT/verb_prompts.jso
 
 # 5. layer sweep: where is hint-reliance decodable from activations at all?
 #    (LOFO AUROC per candidate layer; chooses the read layer for the verbalizer.
-#    The label-based vectors saved here are NOT used for the audit — the
+#    The label-based vectors saved here are NOT used for the audit - the
 #    audited direction comes from the verbalizer's CLAIMS in stage B.)
 python -m sieve_audit.adapters.hf_steering_runner decode-lofo \
   --model "$MODEL" --dtype bfloat16 \
@@ -54,7 +54,7 @@ python scripts/control_records.py records \
   "$OUT/labeled.jsonl" "$OUT/prompts/organism_items.jsonl" \
   "$OUT/control_generations.jsonl" "$OUT/control_verb_prompts.jsonl"
 
-# 8. verbalize the control (full variant only — no cot field needed for the
+# 8. verbalize the control (full variant only - no cot field needed for the
 #    control's decodability question, but keep cot for symmetry)
 python -m sieve_audit.adapters.verbalizer verbalize \
   --model "$MODEL" --dtype bfloat16 \

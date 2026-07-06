@@ -6,7 +6,7 @@ unhinted input the model has no hint to rely on, so there is no hint-reliance
 state to read: a faithful verbalizer's claims must NOT decode these transplanted
 labels (expected verdict: not_decodable / surface_confounded). If they do
 decode, the verbalizer is picking up a per-question confound (e.g. difficulty),
-not the hidden property — and the organism result is not usable evidence.
+not the hidden property - and the organism result is not usable evidence.
 
 Usage:
   control_records.py subset  <labeled.jsonl> <unhinted_prompts.jsonl> <out.jsonl>

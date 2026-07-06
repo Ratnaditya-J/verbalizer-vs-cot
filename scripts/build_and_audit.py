@@ -82,7 +82,7 @@ def main() -> int:
         verbalizer=VERBALIZER,
         layer=LAYER,
         property_tested=PROPERTY + " (NEGATIVE CONTROL: unhinted twins, transplanted labels)",
-        prompt_distribution=DIST + " — unhinted twins",
+        prompt_distribution=DIST + " - unhinted twins",
         prompt_license="MIT (generated)",
         claim_scores_out_of_sample=True,
         scorer_specs=SCORERS,

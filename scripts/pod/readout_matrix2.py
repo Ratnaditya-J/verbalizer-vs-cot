@@ -1,6 +1,6 @@
 """Readout matrix 2: scaled patch injection + strict one-word yes/no format.
 The state influences phrasing at L20 but the semantic yes/no is prior-locked
-to 'No' — test whether amplifying the injected vector unlocks it."""
+to 'No' - test whether amplifying the injected vector unlocks it."""
 import json
 
 import numpy as np

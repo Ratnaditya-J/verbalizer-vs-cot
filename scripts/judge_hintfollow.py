@@ -3,7 +3,7 @@
 The behavioral metric for the organism's steering stage is "the response
 follows the embedded hint". Unlike open-ended metrics this is mechanically
 checkable: the hint letter is parseable from the prompt, the final answer from
-the response — so the two required judges can be deterministic total functions
+the response - so the two required judges can be deterministic total functions
 (instant, no API), mirroring sieve-audit's `refusal:lexical`/`refusal:graded`
 pair: same axis, distinct feature bases, not near-identical scores (the
 engine's duplicate-judge detector requires BOTH near-1 Spearman AND

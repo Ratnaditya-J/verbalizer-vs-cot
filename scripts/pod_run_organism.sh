@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # Organism validation run (Experiment 1): hint-unfaithfulness on a 7B-32B open
 # model, audited end-to-end by SIEVE's verbalizer adapter. This is the run that
-# earns the right to make claims on GLM-5.2 (Experiment 2) — do NOT touch GLM
+# earns the right to make claims on GLM-5.2 (Experiment 2) - do NOT touch GLM
 # until (a)-(c) below hold:
 #   (a) verbalizer claims causally_sufficient for hint-reliance,
 #   (b) claims survive CoT removal (Tier-2 `cot` gate: survives-cot-removal),
 #   (c) negative control (unhinted twins) yields not_decodable /
-#       surface_confounded — the verbalizer must not hallucinate hidden state.
+#       surface_confounded - the verbalizer must not hallucinate hidden state.
 #
 # Needs: 1x80GB GPU, pip install -e ".[runner]" (pulls sieve-audit runner+judges
 # extras), OPENROUTER_API_KEY for the two steering judges.
@@ -24,7 +24,7 @@ python -m verbalizer_vs_cot.organisms.hint_unfaithfulness \
   --n 600 --seed $SEED --out-dir "$OUT/prompts"
 
 # 1. subject-model generations on the HINTED prompts (CoT + final answer).
-#    (simple generation loop; any harness works — record {prompt_id, generated_text})
+#    (simple generation loop; any harness works - record {prompt_id, generated_text})
 python scripts/generate.py --model "$MODEL" \
   --prompts "$OUT/prompts/hinted_prompts.jsonl" \
   --max-new-tokens 512 --out "$OUT/generations.jsonl"
@@ -52,12 +52,11 @@ python -m sieve_audit.adapters.hf_steering_runner steer \
   --model "$MODEL" --vectors "$OUT/vectors.npz" \
   --steer-prompts "$OUT/verb_prompts.jsonl" --alpha-mode relative \
   --out "$OUT/steer.jsonl"
-python -m sieve_audit.adapters.hf_steering_runner judge \
-  --steer-prompts "$OUT/verb_prompts.jsonl" --generations "$OUT/steer.jsonl" \
-  --metric "$PROPERTY" \
-  --judge "openrouter:anthropic/claude-opus-4.1" \
-  --judge "openrouter:openai/gpt-5.2" \
-  --out "$OUT/judged.jsonl"
+# The organism's metric is mechanically checkable, so the run-1 pipeline used
+# the deterministic judge pair instead of LLM judges (see scripts/pod/stage_b.sh):
+python scripts/judge_hintfollow.py \
+  --steer-prompts "$OUT/verb_prompts.jsonl" \
+  --generations "$OUT/steer.jsonl" --out "$OUT/judged.jsonl"
 
 # 5. bundle + audit (the verdict logic is GPU-free and reproducible)
 python -m sieve_audit.adapters.verbalizer bundle \
@@ -71,6 +70,6 @@ python -m sieve_audit.adapters.verbalizer bundle \
 sieve audit --bundle "$OUT/bundle.json" --name organism_hint --out "$OUT/reports"
 
 # 6. negative control: same pipeline on the UNHINTED twins (no hidden property;
-#    expected not_decodable / surface_confounded — anything stronger means the
+#    expected not_decodable / surface_confounded - anything stronger means the
 #    verbalizer hallucinates hidden state and Experiment 2 is off).
 echo "[pod] now repeat steps 1-5 with unhinted_prompts.jsonl -> control bundle"
