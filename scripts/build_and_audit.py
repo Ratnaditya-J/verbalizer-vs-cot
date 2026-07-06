@@ -55,23 +55,30 @@ def main() -> int:
         claim_scores_out_of_sample=True,  # scorers are fixed rubrics, never tuned on these examples
         scorer_specs=SCORERS,
     )
-    steer_rows = _rows(rd / "steer.jsonl")
-    bundle.efficacy = [
-        EfficacyRecord(
-            alpha=r["alpha"], prompt_id=r["prompt_id"],
-            resid_delta_norm=r["resid_delta_norm"] or 0.0,
-            resid_base_norm=r["resid_base_norm"] or 0.0,
-            expected_delta_norm=r["expected_delta_norm"],
-            output_changed=bool(r["output_changed"]),
-            arm=r["arm"],
-        )
-        for r in steer_rows if r["resid_base_norm"] is not None
-    ]
-    bundle.steering = [
-        SteeringRecord(arm=r["arm"], alpha=r["alpha"], prompt_id=r["prompt_id"],
-                       judge_scores=r["judge_scores"])
-        for r in _rows(rd / "judged.jsonl")
-    ]
+    # causal-stage evidence is optional: a run stopped at the robustness gate
+    # (gate_robustness.py) has no steering; the audit then reports the
+    # correlational stages and refuses the causal verdict, which is the point.
+    if (rd / "steer.jsonl").exists():
+        steer_rows = _rows(rd / "steer.jsonl")
+        bundle.efficacy = [
+            EfficacyRecord(
+                alpha=r["alpha"], prompt_id=r["prompt_id"],
+                resid_delta_norm=r["resid_delta_norm"] or 0.0,
+                resid_base_norm=r["resid_base_norm"] or 0.0,
+                expected_delta_norm=r["expected_delta_norm"],
+                output_changed=bool(r["output_changed"]),
+                arm=r["arm"],
+            )
+            for r in steer_rows if r["resid_base_norm"] is not None
+        ]
+        bundle.steering = [
+            SteeringRecord(arm=r["arm"], alpha=r["alpha"], prompt_id=r["prompt_id"],
+                           judge_scores=r["judge_scores"])
+            for r in _rows(rd / "judged.jsonl")
+        ]
+    else:
+        print("[audit] no steering evidence (robustness gate stopped the causal "
+              "stage); auditing the correlational stages only")
     bundle.validate()
     args.out_dir.mkdir(parents=True, exist_ok=True)
     bundle.save(args.out_dir / "bundle_main.json")
