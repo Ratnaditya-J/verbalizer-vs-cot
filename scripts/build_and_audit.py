@@ -39,9 +39,18 @@ def main() -> int:
     parser.add_argument("--control-claims-file", default="control_claims_v2.jsonl")
     parser.add_argument("--verbalizer", default=VERBALIZER,
                         help="verbalizer identity string for the card scope")
+    parser.add_argument("--revision", default=None,
+                        help="pinned model revision (must match the prereg scope)")
+    parser.add_argument("--prereg", type=Path, default=None,
+                        help="prereg JSON (sieve prereg output); the MAIN card "
+                             "states MATCH/MISMATCH against its hash")
     parser.add_argument("--seed", type=int, default=0)
     args = parser.parse_args()
     rd = args.run_dir
+    prereg = None
+    if args.prereg:
+        from sieve_audit import PreRegistration
+        prereg = PreRegistration.load(args.prereg)
 
     # --- main bundle ---
     bundle = build_bundle_from_records(
@@ -53,6 +62,7 @@ def main() -> int:
         prompt_distribution=DIST,
         prompt_license="MIT (generated)",
         claim_scores_out_of_sample=True,  # scorers are fixed rubrics, never tuned on these examples
+        revision=args.revision,
         scorer_specs=SCORERS,
     )
     # causal-stage evidence is optional: a run stopped at the robustness gate
@@ -83,8 +93,16 @@ def main() -> int:
     args.out_dir.mkdir(parents=True, exist_ok=True)
     bundle.save(args.out_dir / "bundle_main.json")
     res = run_audit(bundle, AuditConfig(seed=args.seed),
-                    bundle_path=str(args.out_dir / "bundle_main.json"))
+                    bundle_path=str(args.out_dir / "bundle_main.json"),
+                    prereg=prereg)
     write_card(res.card, args.out_dir, "organism_main")
+    if res.card.preregistration is not None:
+        pre = res.card.preregistration
+        print(f"[audit] pre-registration: "
+              f"{'MATCH' if pre['matches'] else 'MISMATCH'} "
+              f"({pre['declared_hash'][:16]}...)")
+        for d in pre["diffs"]:
+            print(f"  - {d}")
 
     # --- negative control: no hidden property, transplanted labels ---
     control = build_bundle_from_records(

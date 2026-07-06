@@ -88,7 +88,16 @@ def main() -> int:
     parser.add_argument("--max-epochs", type=int, default=10)
     parser.add_argument("--patience", type=int, default=3)
     parser.add_argument("--val-frac", type=float, default=0.15)
+    parser.add_argument("--variants", nargs="+", default=["full"],
+                        choices=["full", "cot_removed", "random_removed"],
+                        help="input variants to train on (run 3: all three, so "
+                             "span-removed inputs are in-distribution; the label "
+                             "for every variant is the BEHAVIORAL label, never "
+                             "whether a span was removed)")
     parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument("--checkpoint-id", default=None,
+                        help="identity string for the checkpoint (lands in the "
+                             "bundle's verbalizer name; pin it in the prereg)")
     parser.add_argument("--out", type=Path, required=True, help="checkpoint dir")
     args = parser.parse_args()
 
@@ -118,27 +127,51 @@ def main() -> int:
           f"({int(y.sum())} followed / {int((1 - y).sum())} resisted)")
 
     # --- subject activations (plain model, same read as the audit) ---
+    # One activation per (record, variant): span-removed inputs become
+    # IN-distribution for the decoder (the run-3 change). Every variant of a
+    # record carries the record's behavioral label and stays on the record's
+    # side of the train/val split (no leakage across variants of one example).
+    from sieve_audit.adapters.verbalizer import _strip_random_span, _strip_span
+
     class _A:
         model, dtype = args.subject_model, args.dtype
     model, tokenizer = _load_model(_A)
-    acts = []
+    variant_rng = np.random.default_rng(args.seed)
+    acts, act_labels, act_record_idx = [], [], []
     for i, r in enumerate(records):
         text = r["prompt"] + "\n" + r["cot"]
-        acts.append(_hidden_at_layer(model, tokenizer, text, args.layer, pool="last"))
+        variant_texts = {"full": text}
+        if "cot_removed" in args.variants:
+            variant_texts["cot_removed"] = _strip_span(text, r["cot"])
+        if "random_removed" in args.variants:
+            variant_texts["random_removed"] = _strip_random_span(
+                text, len(r["cot"]), variant_rng)
+        for name in args.variants:
+            acts.append(_hidden_at_layer(model, tokenizer, variant_texts[name],
+                                         args.layer, pool="last"))
+            act_labels.append(int(r["label"]))
+            act_record_idx.append(i)
         if (i + 1) % 50 == 0:
-            print(f"  activations {i + 1}/{len(records)}")
+            print(f"  activations {i + 1}/{len(records)} "
+                  f"(x{len(args.variants)} variants)")
     X = np.stack(acts).astype(np.float32)
 
-    # --- stratified train/val split (within train families) ---
+    # --- stratified train/val split at RECORD level (within train families);
+    # all variants of a record land on the same side, so validation is never
+    # a seen activation with a different span removed ---
     idx = np.arange(len(y))
     val_idx = np.concatenate([
         rng.choice(idx[y == c], max(1, int(args.val_frac * (y == c).sum())),
                    replace=False)
         for c in (0, 1)
     ])
-    val_mask = np.zeros(len(y), bool)
-    val_mask[val_idx] = True
-    print(f"[train] split: {int((~val_mask).sum())} train / {int(val_mask.sum())} val")
+    rec_val_mask = np.zeros(len(y), bool)
+    rec_val_mask[val_idx] = True
+    val_mask = rec_val_mask[np.array(act_record_idx)]      # per activation row
+    y = np.array(act_labels)                                # per activation row
+    print(f"[train] split: {int((~rec_val_mask).sum())} train / "
+          f"{int(rec_val_mask.sum())} val records "
+          f"({int((~val_mask).sum())} / {int(val_mask.sum())} activation rows)")
 
     # --- decoder: subject weights + LoRA on attention projections ---
     lora = LoraConfig(r=args.lora_r, lora_alpha=args.lora_alpha,
@@ -179,7 +212,7 @@ def main() -> int:
         decoder.train()
         return _auroc(y[val_mask], scores)
 
-    tr_idx = idx[~val_mask]
+    tr_idx = np.arange(len(y))[~val_mask]
     best, best_epoch = -1.0, -1
     args.out.mkdir(parents=True, exist_ok=True)
     for epoch in range(args.max_epochs):
@@ -216,9 +249,10 @@ def main() -> int:
         "seed": args.seed,
         "val_auroc_train_families": best,
         "n_train": int((~val_mask).sum()),
+        "training_variants": list(args.variants),
         "lora": {"r": args.lora_r, "alpha": args.lora_alpha,
                  "target_modules": ["q_proj", "v_proj"]},
-        "checkpoint_id": f"organism-v2-seed{args.seed}",
+        "checkpoint_id": args.checkpoint_id or f"organism-v2-seed{args.seed}",
     }
     (args.out / "metadata.json").write_text(json.dumps(metadata, indent=1))
     print(f"[train] checkpoint (LOCAL ONLY) -> {args.out}; "
