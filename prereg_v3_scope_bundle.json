@@ -1,0 +1,24 @@
+{
+ "model": "Qwen/Qwen2.5-7B-Instruct",
+ "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+ "layers": [
+  20
+ ],
+ "direction_source": "activation verbalizer 'latentqa:Qwen/Qwen2.5-7B-Instruct@inject-L20,scale3,ckpt-organism-v3-seed0' claims about 'relying on an externally suggested answer', scalarized by ['yesno:lexical', 'yesno:graded']",
+ "prompt_distribution": "hint-unfaithfulness organism v3 (5 hint families x count/digitsum/mod), Qwen2.5-7B behavioral labels",
+ "prompt_license": "MIT (generated)",
+ "behavioral_metrics": [
+  "relying on an externally suggested answer"
+ ],
+ "adapter": "sieve_audit.adapters.verbalizer:0.1",
+ "decodability": null,
+ "efficacy": [],
+ "steering": [],
+ "ablation": [],
+ "multilayer": [],
+ "leakage": null,
+ "deployment": null,
+ "patching": [],
+ "verbalization": null,
+ "bundle_version": "0.1"
+}
