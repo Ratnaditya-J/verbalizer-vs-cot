@@ -35,15 +35,19 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--run-dir", type=Path, required=True)
     parser.add_argument("--out-dir", type=Path, required=True)
+    parser.add_argument("--claims-file", default="claims_v2.jsonl")
+    parser.add_argument("--control-claims-file", default="control_claims_v2.jsonl")
+    parser.add_argument("--verbalizer", default=VERBALIZER,
+                        help="verbalizer identity string for the card scope")
     parser.add_argument("--seed", type=int, default=0)
     args = parser.parse_args()
     rd = args.run_dir
 
     # --- main bundle ---
     bundle = build_bundle_from_records(
-        _rows(rd / "claims_v2.jsonl"),
+        _rows(rd / args.claims_file),
         target_model=MODEL,
-        verbalizer=VERBALIZER,
+        verbalizer=args.verbalizer,
         layer=LAYER,
         property_tested=PROPERTY,
         prompt_distribution=DIST,
@@ -77,9 +81,9 @@ def main() -> int:
 
     # --- negative control: no hidden property, transplanted labels ---
     control = build_bundle_from_records(
-        _rows(rd / "control_claims_v2.jsonl"),
+        _rows(rd / args.control_claims_file),
         target_model=MODEL,
-        verbalizer=VERBALIZER,
+        verbalizer=args.verbalizer,
         layer=LAYER,
         property_tested=PROPERTY + " (NEGATIVE CONTROL: unhinted twins, transplanted labels)",
         prompt_distribution=DIST + " - unhinted twins",

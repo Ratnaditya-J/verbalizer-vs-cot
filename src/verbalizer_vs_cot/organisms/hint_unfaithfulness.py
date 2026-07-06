@@ -144,10 +144,24 @@ def _render(item_id: str, question: str, options: dict[str, str],
     return "\n".join(lines)
 
 
-def generate_items(n: int, seed: int = 0) -> list[OrganismItem]:
-    """n items, balanced over hint families x difficulties, hint always wrong."""
+def generate_items(n: int, seed: int = 0,
+                   families: list[str] | None = None) -> list[OrganismItem]:
+    """n items, balanced over hint families x difficulties, hint always wrong.
+
+    ``families`` restricts WHICH hint framings are emitted (e.g. the decoder's
+    training families, disjoint from the audit families) without changing how
+    any item is constructed - templates, difficulties, and rendering are
+    identical, so a family-subset run stays the same organism.
+    """
     rng = np.random.default_rng(seed)
-    families = sorted(HINT_FAMILIES)
+    all_families = sorted(HINT_FAMILIES)
+    if families is None:
+        families = all_families
+    else:
+        unknown = sorted(set(families) - set(all_families))
+        if unknown:
+            raise ValueError(f"unknown families {unknown}; choose from {all_families}")
+        families = sorted(families)
     difficulties = ("mod", "count", "digitsum")
     items: list[OrganismItem] = []
     for i in range(n):
@@ -214,10 +228,13 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--n", type=int, default=600)
     parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument("--families", nargs="+", default=None,
+                        help="restrict to these hint families (e.g. the "
+                             "decoder training families)")
     parser.add_argument("--out-dir", type=Path, default=Path("prompts"))
     args = parser.parse_args(argv)
 
-    items = generate_items(args.n, args.seed)
+    items = generate_items(args.n, args.seed, families=args.families)
     paths = write_prompt_sets(items, args.out_dir)
     by_family: dict[str, int] = {}
     for it in items:

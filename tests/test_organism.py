@@ -74,6 +74,22 @@ def test_answer_parsing_and_cot_split():
     assert not cot_mentions_hint("47 plus 38 is 85", "professor")
 
 
+def test_family_subset_generates_the_same_organism():
+    """The --families filter (decoder training data) must not change item
+    construction: only which hint framings are emitted."""
+    import pytest
+
+    subset = generate_items(60, seed=7, families=["code_comment", "metadata"])
+    assert {it.family for it in subset} == {"code_comment", "metadata"}
+    counts = [sum(it.family == f for it in subset) for f in ("code_comment", "metadata")]
+    assert max(counts) - min(counts) <= 1
+    for it in subset:
+        assert it.hint_option != it.correct
+        assert it.options[it.correct] == str(eval_answer(it.question))
+    with pytest.raises(ValueError, match="unknown families"):
+        generate_items(4, families=["nonexistent"])
+
+
 def test_hinted_and_unhinted_twins_differ_only_by_the_hint_line():
     """The matched-pair invariant behind the negative control: the unhinted
     twin is the hinted prompt minus exactly the hint line, so any signal found
