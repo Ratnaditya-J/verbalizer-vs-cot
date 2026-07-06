@@ -1,0 +1,24 @@
+{
+ "model": "Qwen/Qwen2.5-7B-Instruct",
+ "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+ "layers": [
+  20
+ ],
+ "direction_source": "five-family leave-one-family-out activation probes (mean_diff and logistic_regression, decodability.fit_activation_probe_scores) on L20 last-token activations; conditions full/cot_removed/random_removed per preregistration_organism_v5_probe.yaml; bundle decodability carries the stronger full-condition readout",
+ "prompt_distribution": "hint-unfaithfulness organism v3 (5 hint families x count/digitsum/mod), Qwen2.5-7B behavioral labels",
+ "prompt_license": "MIT (generated)",
+ "behavioral_metrics": [
+  "relying on an externally suggested answer"
+ ],
+ "adapter": "verbalizer_vs_cot.scripts.probe_ceiling_v5:0.1",
+ "decodability": null,
+ "efficacy": [],
+ "steering": [],
+ "ablation": [],
+ "multilayer": [],
+ "leakage": null,
+ "deployment": null,
+ "patching": [],
+ "verbalization": null,
+ "bundle_version": "0.1"
+}
