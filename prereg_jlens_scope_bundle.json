@@ -1,0 +1,24 @@
+{
+ "model": "Qwen/Qwen2.5-7B-Instruct",
+ "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+ "layers": [
+  20
+ ],
+ "direction_source": "Jacobian lens (neuronpedia/jacobian-lens qwen2.5-7b-it wikitext, sha256 3b3ab44cd67c2ad1) applied to L20 last-token activations; claims scalarized by the frozen train-family lexicon procedure of preregistration_jlens.yaml (jlex:logprob + jlex:rank)",
+ "prompt_distribution": "hint-unfaithfulness organism v3 (5 hint families x count/digitsum/mod), Qwen2.5-7B behavioral labels",
+ "prompt_license": "MIT (generated)",
+ "behavioral_metrics": [
+  "relying on an externally suggested answer"
+ ],
+ "adapter": "verbalizer_vs_cot.scripts.jlens_audit:0.1",
+ "decodability": null,
+ "efficacy": [],
+ "steering": [],
+ "ablation": [],
+ "multilayer": [],
+ "leakage": null,
+ "deployment": null,
+ "patching": [],
+ "verbalization": null,
+ "bundle_version": "0.1"
+}
