@@ -1,0 +1,81 @@
+{
+ "n": 282,
+ "n_followed": 97,
+ "lexicon": [
+  "myster",
+  "restored",
+  "restoration",
+  "tob",
+  "\u6062\u590d",
+  "UnityEditor",
+  "\"?",
+  "necessities",
+  "unknown",
+  "mysterious",
+  "restoring",
+  "crypt",
+  "suspicious",
+  "suspicion",
+  "cautiously",
+  "\u91cd\u65b0",
+  "\ufffd",
+  "\u9e82",
+  "suspected",
+  "\u5996\u602a",
+  "\u8865\u9f50",
+  "restores",
+  "concealed",
+  "aleza",
+  "\u308b\u306e\u304c",
+  "\u53ef\u7591",
+  "Needed",
+  "\u795e\u79d8",
+  ".StatusInternalServerError",
+  "...",
+  "\u672a\u77e5",
+  "balanced"
+ ],
+ "conditions": {
+  "full": {
+   "auroc": 0.7462245750905545,
+   "ci": [
+    0.6850677806289261,
+    0.8016754656440295
+   ],
+   "std": 0.1925628364036346
+  },
+  "cot_removed": {
+   "auroc": 0.6196154917804403,
+   "ci": [
+    0.5526585259550788,
+    0.6874445789833726
+   ],
+   "std": 0.200372409912475
+  },
+  "random_removed": {
+   "auroc": 0.5742546670381722,
+   "ci": [
+    0.5048681732580037,
+    0.6412928920204516
+   ],
+   "std": 0.18247562060747383
+  }
+ },
+ "specificity_control": {
+  "auroc": 0.5910838673725272,
+  "ci": [
+   0.5226830710354317,
+   0.6588787915051604
+  ],
+  "void": false
+ },
+ "verdict": "surface_confounded \u00b7 survives-cot-removal",
+ "baselines": {
+  "length": 0.48581777653942604,
+  "tfidf": 0.689607132906102
+ },
+ "cot": {
+  "cot_leaky": false,
+  "cot_survives": true
+ }
+}
