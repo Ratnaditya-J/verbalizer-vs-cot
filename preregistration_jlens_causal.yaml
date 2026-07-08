@@ -1,0 +1,73 @@
+# =============================================================================
+# PRE-REGISTRATION - Jacobian Lens audit ADDENDUM: the causal axis
+# FROZEN 2026-07-07 before any causal evidence exists (the correlational audit
+# is complete: surface_confounded, survives-cot-removal, MATCH 4626956b...).
+# =============================================================================
+
+experiment: J-lens addendum - causal stage for the claim-recovered direction
+status: FROZEN 2026-07-07. Correlational results known; NO causal evidence exists yet.
+
+# ---- why this addendum exists -------------------------------------------------
+rationale: >
+  Anthropic's own validation of the J-space is CAUSAL (edits change behavior;
+  ablation removes reasoning; disabling eval-awareness patterns changed
+  blackmail behavior). The correlational audit gated its causal stage on
+  beating surface baselines - correct for monitor claims, but it leaves the
+  axis their claim lives on untested. Monitor validity and mechanism reality
+  dissociate (comprehensive_refusal: surface_confounded AND necessary), so
+  this addendum tests the causal axis directly. All outcomes reportable;
+  surface_confounded remains the monitor-axis verdict regardless.
+
+# ---- fixed (identical to the correlational audit) ------------------------------
+subject_model: Qwen/Qwen2.5-7B-Instruct
+revision: a09a35458c702b33eeacc393d103063234e8bc28
+layer: 20
+lens_sha256: 3b3ab44cd67c2ad1f26e9f66eb269db31289b6328585b0459a47e6d3814cba29
+scalarization: "the frozen procedure of preregistration_jlens.yaml, unchanged (same lexicon-selection rule, same scorers)"
+
+# ---- direction recovery ---------------------------------------------------------
+direction: >
+  Mean-difference of subject L20 last-token FULL-condition activations
+  (audit families) grouped by the J-lens claim score at threshold 0.5,
+  z-scored, unit-norm - "the direction that predicts what the lens says"
+  (recover_claim_direction, unchanged from runs 1-3 design). Controls:
+  3 independent random draws + orthogonal + wrong_layer (L10), matched norms.
+
+# ---- causal tests (both axes; SIEVE-v0.1-strict throughout) ---------------------
+sufficiency_steering:
+  alpha_grid: [-0.2, -0.1, 0.1, 0.2]      # relative mode, 0 implicit
+  prompts: "first 30 audit-family hinted prompts (generate_items seed 42, unchanged)"
+  max_new_tokens: 512
+necessity_ablation:
+  arms: [baseline, probe, ablate_random]
+  prompts: "same 30 prompts"
+judges:
+  - hintfollow_lexical                     # deterministic pair (shared parser disclosed)
+  - hintfollow_graded
+  - openrouter:openai/gpt-5.2              # independent LLM judge (breaks the common mode)
+verdict_thresholds: SIEVE-v0.1-strict      # no overrides; efficacy gate as always
+
+# ---- secondary, NON-GATING diagnostics (answering 'your lexicon was weak') ------
+secondary_scalarization_diagnostics: >
+  Reported alongside, never gating: (a) K=128 lexicon variant of the frozen
+  selection rule; (b) logistic regression on the lexicon log-probs
+  (train-family-fitted, audit-family-scored). Both quantify how much the
+  32-token semantic lexicon understates the lens; decodability-axis numbers
+  only.
+
+# ---- outcomes (verbatim licensed claims) ----------------------------------------
+outcomes:
+  causally_involved: >
+    "The J-lens claim-direction is causally involved (sufficient and/or
+    necessary vs matched controls) while its monitor advantage over surface
+    baselines remains unproven: surface_confounded AND causally-involved -
+    mechanism real, epistemic advantage unproven. Mirrors Anthropic's causal
+    validation on an independent organism with ground truth."
+  not_causally_involved: >
+    "Under single-layer steering and ablation at L20 with matched controls,
+    the claim-direction is neither sufficient nor necessary; bounded to these
+    interventions, does NOT establish the lens confabulates."
+  intervention_ineffective: "inconclusive; causality untested, not absent."
+budget_ceiling_usd: 15
+data_policy: unchanged
+report_dir: reports/jlens_audit/           # same directory; addendum section in REPORT.md
