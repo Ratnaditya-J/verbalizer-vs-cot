@@ -145,7 +145,8 @@ def main() -> int:
                 s = llm_scores[i]
                 if s == s:  # finite only; NaN dropped here, record keeps 2 judges
                     scores[args.llm_judge] = s
-            row = {"arm": r["arm"], "alpha": r["alpha"],
+            # ablation rows carry no alpha; 0.0 is ignored by the bundle path
+            row = {"arm": r["arm"], "alpha": r.get("alpha", 0.0),
                    "prompt_id": r["prompt_id"], "judge_scores": scores}
             if "layers" in r:
                 row["layers"] = r["layers"]
