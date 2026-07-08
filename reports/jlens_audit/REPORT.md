@@ -68,10 +68,28 @@ still not clearing the surface bar that separates "reads internals" from
 
 Everything here is bounded to: this lens artifact, Qwen2.5-7B-Instruct
 @a09a3545, layer 20 last-token, this organism and property, SIEVE-v0.1-strict.
-Nothing here evaluates J-lens on Claude or on Anthropic's own demos; their
-release validated causally (J-space edits) - this audit adds the ground-truth
-decodability / surface-confound / CoT-redundancy / specificity axes the
-release did not report. A `surface_confounded` verdict on a 7B organism does
+Nothing here evaluates J-lens on Claude or on Anthropic's own demos. Their
+paper's validation battery is extensively CAUSAL and includes a probe
+decomposition (Fig 16: J-space swaps flip 61% of two-hop answers vs 28% for
+the non-J-space component carrying ~90% of variance) and causal-selectivity
+controls (report/inference affected, continuation untouched) - but it reports
+no detection-performance metrics against ground truth, no surface-text
+baselines, no CoT-redundancy removal, and no detector-specificity control;
+those are the axes this audit adds. The audited artifact is Neuronpedia's
+extension of the method to open-weight models (dense lens, not the paper's
+sparse k=25 J-space frame); the paper's quantitative claims concern Claude
+4.5/4.6-class models only.
+
+Pre-outcome note (recorded before the causal addendum's results exist): the
+paper reports that causal swap success tracks 'workspace loading' and that
+NUMBER WORDS have the lowest loading and worst swap performance they tested.
+This organism's hidden intermediates are numeric, so their own results
+predict weak causal manipulability in this setting - a negative causal
+result here would be consistent with that caveat and must be scoped to it;
+a positive one would be stronger for landing in their hardest content class.
+Independently, their GSM8K ablation finding ('external reasoning reduces
+J-space dependence') corroborates run 5's conclusion from the opposite
+direction: CoT externalization drains the internal signal. A `surface_confounded` verdict on a 7B organism does
 not establish the method confabulates; it establishes the burden of proof the
 strict bar demands and the current evidence does not meet.
 
