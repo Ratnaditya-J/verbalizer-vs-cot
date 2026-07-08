@@ -98,3 +98,55 @@ strict bar demands and the current evidence does not meet.
 Entirely local and GPU-free (pre-fitted lens + saved activations); zero pod
 spend. Lens artifact is third-party public; activations stay local. Card,
 bundle, gates JSON, and sample claims committed in this directory.
+
+---
+
+# ADDENDUM: the causal axis (pre-registered separately, run after the above)
+
+**Outcome (prereg `e8fe7915...`, card states MATCH):
+`surface_confounded · not necessary · survives-cot-removal`.**
+
+The claim-recovered direction (mean-diff of L20 activations grouped by the
+lens's claims - "the direction that predicts what the lens says") went through
+the full causal battery with three judges (deterministic pair + independent
+LLM judge; min pairwise Spearman 0.819 - the judges genuinely agree):
+
+- **Necessity (adjudicated): NOT necessary.** Ablating the direction reduces
+  hint-following by +0.062 [-0.076, +0.211] vs +0.034 for the matched
+  random-ablation control - no separation.
+- **Sufficiency (diagnostic; the verdict taxonomy short-circuits at the
+  monitor axis): would not have passed.** The efficacy gate PASSED (the
+  intervention demonstrably bit: 20% relative residual movement), but the
+  probe arm's behavioral effect is not significant and exceeds no control
+  (probe-minus-control deltas are all negative at both primary doses);
+  dose-response rho 0.173.
+- **Secondary scalarization diagnostics (pre-registered, non-gating):** K=128
+  lexicon changes nothing (0.741). But logistic regression ON the lexicon
+  log-probs reaches **0.833 [0.778, 0.878]** - the lens carries substantially
+  more label information than the fixed semantic lexicon expresses (as
+  pre-cautioned: 0.746 was a lower bound), approaching the trained decoder
+  (0.843), though no longer in interpretable-claim form.
+
+## Scope of the causal negative (the part that must never be detached)
+
+1. We intervened on a SINGLE mean-diff direction recovered from the
+   scalarized claims - not on Anthropic's J-space frame. Their paper's causal
+   results (Fig 16 swaps, selectivity) manipulate multi-coordinate workspace
+   states; a single-direction null does not contradict them.
+2. The pre-outcome note above applies: the organism's content is numeric,
+   their lowest-workspace-loading class; a weak causal grip here is
+   consistent with their own reported pattern.
+3. Single layer, additive steering + directional ablation only; distributed
+   mechanisms untested (as every SIEVE card states).
+
+## Final synthesis for this audit
+
+On a ground-truth organism, the Jacobian lens readout: (a) tracks the hidden
+behavior across held-out families (0.746; 0.833 with a trained reading of its
+lexicon), (b) is the only readout in the series whose signal survives CoT
+removal, (c) does not clear the surface-text baseline with the pre-registered
+margin, (d) does not hallucinate on clean inputs, and (e) the single direction
+its claims define is neither necessary nor sufficient for the behavior under
+the tested interventions. Mechanism-level claims about the J-space frame are
+untested here; monitor-level advantage over reading the transcript is
+unproven at this scale and property.
