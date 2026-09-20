@@ -21,3 +21,14 @@ mechanism/counterfactual validation. The wrapper solves the independent utility
 measurement problem, not that stronger construct-validity question.
 
 Run `pytest tests/test_amber_tasks.py tests/test_organism.py` for offline contracts.
+
+## Parser v2 development correction
+
+The first GPU case computed the auxiliary sum correctly but wrapped its final
+answer line in Markdown bold. Version 1's strict line parser counted that as
+missing. Version 2 accepts plain, fully bold and bold-label integer lines, retains
+strict-format compliance separately, and abstains on conflicting utility values.
+It also parses primary and auxiliary answers only after an explicit reasoning
+closing boundary, preventing scratchpad guesses from becoming final outcomes.
+Original v1 run scores remain frozen. Any v2 rescoring of those responses must be
+reported as a post-development parser audit, never substituted silently for v1.

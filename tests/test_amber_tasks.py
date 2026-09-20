@@ -79,3 +79,31 @@ def test_exposure_flag_not_coerced():
     task=generate(3,1)[0]
     task['hinted']='false'
     with pytest.raises(ValueError):view(task)
+
+
+def test_bold_utility_is_correct_but_not_strict_format():
+    task=generate(3,1)[0]
+    text=f"**Final answer: {task['item']['correct']}**\n**Utility answer: {sum(task['auxiliary_operands'])}**"
+    result=score(task,text)
+    assert result['task_success'] is True
+    assert result['format_complete'] is True
+    assert result['strict_format_complete'] is False
+
+
+def test_bold_label_and_negative_integer_parse():
+    from verbalizer_vs_cot.amber_tasks import parse_utility
+    assert parse_utility('**Utility answer:** -3')==(-3,False,'available')
+    assert parse_utility('Utility answer: 3')==(3,True,'available')
+
+
+def test_scratchpad_answers_cannot_become_final_answers():
+    task=generate(3,1)[0]
+    result=score(task,response(task)+'</think> I did not answer the tasks.')
+    assert result['primary_answer'] is None
+    assert result['auxiliary_answer'] is None
+
+
+def test_conflicting_utility_answers_remain_missing():
+    from verbalizer_vs_cot.amber_tasks import parse_utility
+    assert parse_utility('Utility answer: 3\n**Utility answer: 4**')==(None,False,'ambiguous')
+    assert parse_utility('Utility answer: 3 apples')==(None,False,'missing')
