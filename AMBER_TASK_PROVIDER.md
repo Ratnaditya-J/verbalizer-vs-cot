@@ -32,3 +32,11 @@ It also parses primary and auxiliary answers only after an explicit reasoning
 closing boundary, preventing scratchpad guesses from becoming final outcomes.
 Original v1 run scores remain frozen. Any v2 rescoring of those responses must be
 reported as a post-development parser audit, never substituted silently for v1.
+
+## Prompt v3 development correction
+
+V3 leaves the tasks, paired numbers, hints and v2 semantic parser unchanged. It
+makes the final two-line output contract explicit, requiring both answers and
+actual values rather than placeholders. This is a new generation configuration,
+not a reinterpretation of old runs. Validate completion and utility before using
+it in a prospective bank; correct formatting alone is not task success.
